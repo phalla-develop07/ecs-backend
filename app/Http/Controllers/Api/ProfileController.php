@@ -11,7 +11,7 @@ class ProfileController extends Controller
     // GET /api/profile
     public function show(Request $request)
     {
-        return response()->json(['success' => true, 'user' => $request->user()]);
+        return response()->json(['success' => true, 'message' => 'Your profile is gotten successfully', 'user' => $request->user()]);
     }
  
     // PUT /api/profile
@@ -23,7 +23,7 @@ class ProfileController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
         ]);
         $user->update($validated);
-        return response()->json(['success' => true, 'user' => $user]);
+        return response()->json(['success' => true, 'message' => 'Your profile is updated successfully', 'user' => $user]);
     }
  
     // PUT /api/profile/password

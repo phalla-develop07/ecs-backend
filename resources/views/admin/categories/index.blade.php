@@ -15,6 +15,7 @@
             <thead class="table-light">
                 <tr>
                     <th>#</th>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Slug</th>
                     <th>Products</th>
@@ -26,6 +27,20 @@
                 @forelse($categories as $category)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+
+                    {{-- ✅ Image column (was completely missing before) --}}
+                    <td>
+                        @if($category->image)
+                            <img src="{{ asset('storage/' . $category->image) }}"
+                                 alt="{{ $category->name }}"
+                                 width="48" height="48"
+                                 class="rounded object-fit-cover">
+                        @else
+                            <span class="text-muted">—</span>
+                        @endif
+                    </td>
+
+                    {{-- ✅ Name (was shifted into the image column before) --}}
                     <td>{{ $category->name }}</td>
                     <td><code>{{ $category->slug }}</code></td>
                     <td>{{ $category->products()->count() }}</td>
@@ -53,7 +68,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">No categories found.</td>
+                    <td colspan="7" class="text-center text-muted py-4">No categories found.</td>
                 </tr>
                 @endforelse
             </tbody>

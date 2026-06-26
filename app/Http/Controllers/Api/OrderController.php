@@ -55,7 +55,7 @@ class OrderController extends Controller
         $orders = Order::with('items.product')
             ->where('user_id', $request->user()->id)
             ->latest()->paginate(10);
-        return response()->json(['success' => true, 'data' => $orders]);
+        return response()->json(['success' => true, 'message' => 'Products are gotten successfully', 'data' => $orders]);
     }
  
     // GET /api/orders/{id}
@@ -64,7 +64,7 @@ class OrderController extends Controller
         $order = Order::with('items.product')
             ->where('id', $id)->where('user_id', $request->user()->id)->first();
         if (!$order) return response()->json(['success' => false, 'message' => 'Not found'], 404);
-        return response()->json(['success' => true, 'data' => $order]);
+        return response()->json(['success' => true, 'message' => 'Order is gotten successfully', 'data' => $order]);
     }
 }
 
