@@ -17,86 +17,108 @@
             justify-content: center;
             align-items: center;
 
-            background: linear-gradient(135deg,
-                    #667eea 0%,
-                    #764ba2 100%);
-
+            background: #f4f6f9;
             font-family: 'Segoe UI', sans-serif;
         }
 
         .login-card {
             width: 100%;
-            max-width: 450px;
+            max-width: 430px;
 
-            background: rgba(255, 255, 255, 0.15);
+            background: #fff;
 
-            backdrop-filter: blur(15px);
+            border-radius: 16px;
 
-            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
 
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, .2);
-
-            border: 1px solid rgba(255, 255, 255, .2);
-
-            padding: 40px;
+            padding: 45px;
         }
 
         .logo-circle {
-            width: 90px;
-            height: 90px;
+            width: 75px;
+            height: 75px;
 
             margin: auto;
 
-            border-radius: 50%;
+            border-radius: 18px;
 
-            background: white;
+            background: lightgray;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 40px;
+            color: white;
 
-            color: #667eea;
+            font-size: 30px;
         }
 
         .title {
+            color: #212529;
             text-align: center;
-            color: white;
-            font-weight: bold;
+            font-weight: 700;
             margin-top: 20px;
         }
 
         .subtitle {
             text-align: center;
-            color: #e5e5e5;
-            margin-bottom: 30px;
+            color: #6c757d;
+            margin-bottom: 35px;
         }
 
         .form-control {
-            border-radius: 12px;
-            height: 50px;
+
+            height: 52px;
+
+            border-radius: 10px;
+
+            border: 1px solid #dee2e6;
+
+            box-shadow: none;
+
+        }
+
+        .form-control:focus {
+
+            border-color: #0d6efd;
+
+            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .15);
+
         }
 
         .input-group-text {
-            border-radius: 12px 0 0 12px;
+
+            background: #f8f9fa;
+
+            border: 1px solid #dee2e6;
+
+            border-right: none;
+
+            color: #6c757d;
         }
 
         .btn-login {
-            height: 50px;
-            border-radius: 12px;
 
-            background: #fff;
-            color: #667eea;
+            height: 52px;
+
+            border-radius: 10px;
+
+            background: lightgray;
+
+            color: black;
 
             font-weight: 600;
-            transition: .3s;
+
+            transition: .25s;
+
         }
 
         .btn-login:hover {
+
+            background: gray;
+
             transform: translateY(-2px);
-            background: #f5f5f5;
+
         }
 
         .form-check-label {
@@ -104,12 +126,17 @@
         }
 
         a {
-            color: white;
+
+            color: gray;
+
             text-decoration: none;
+
         }
 
         a:hover {
-            text-decoration: underline;
+
+            color: gray;
+
         }
 
         .text-danger {
@@ -136,18 +163,21 @@
         </p>
 
         @if (session('error'))
-            <div class="alert alert-danger">
+            <div class="alert alert-danger rounded-3">
+
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+
                 {{ session('error') }}
+
             </div>
         @endif
-
         <form method="POST" action="{{ route('admin.login.post') }}">
 
             @csrf
 
             <div class="mb-3">
 
-                <label class="text-white mb-2">
+                <label class="fw-semibold text-dark">
                     Email Address
                 </label>
 
@@ -220,6 +250,11 @@
             <button type="submit" class="btn btn-login w-100">
                 Login
             </button>
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    © {{ date('Y') }} Admin Panel
+                </small>
+            </div>
 
         </form>
 
