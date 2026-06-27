@@ -22,4 +22,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    // Add inside any model class
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }

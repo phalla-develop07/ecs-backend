@@ -19,4 +19,10 @@ class Category extends Model
             ? asset('storage/' . $this->image)
             : null;
     }
+
+    // Add inside any model class
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }
