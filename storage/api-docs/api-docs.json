@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "My API Documentation",
-        "description": "API documentation for my Laravel application",
+        "title": "ECS Shop API Documentation",
+        "description": "API documentation for the ECS Shop e-commerce application (Laravel + Sanctum backend).",
         "contact": {
             "email": "admin@example.com"
         },
@@ -14,8 +14,8 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8000",
-            "description": "API Server"
+            "url": "http://127.0.0.1:8000",
+            "description": "Local development server"
         }
     ],
     "paths": {
@@ -3402,7 +3402,50 @@
     },
     "components": {
         "schemas": {
-            "User": {
+            "CartItem": {
+                "title": "CartItem",
+                "description": "A single line item in a user's shopping cart",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "product": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Product"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Category": {
+                "title": "Category",
+                "description": "A product category",
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -3410,16 +3453,257 @@
                     },
                     "name": {
                         "type": "string",
-                        "example": "John Doe"
+                        "example": "Perfumes"
                     },
-                    "email": {
+                    "created_at": {
                         "type": "string",
-                        "example": "john@example.com"
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "NotFoundError": {
+                "title": "NotFoundError",
+                "description": "Returned when the requested resource does not exist or does not belong to the authenticated user",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Not found"
+                    }
+                },
+                "type": "object"
+            },
+            "Order": {
+                "title": "Order",
+                "description": "A placed order, created from the contents of a user's cart at checkout",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "total_amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 89.97
+                    },
+                    "status": {
+                        "description": "Always \"pending\" on creation",
+                        "type": "string",
+                        "example": "pending"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St, Phnom Penh"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrderItem": {
+                "title": "OrderItem",
+                "description": "A single line item within an order. Price is a snapshot taken at checkout time and may differ from the product's current price.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "price": {
+                        "description": "Price snapshot at the time of checkout",
+                        "type": "number",
+                        "format": "float",
+                        "example": 29.99
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "product": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Product"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "type": "object"
             },
             "Product": {
+                "title": "Product",
+                "description": "A purchasable product",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 2
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Rose Perfume"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "example": "rose-perfume"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A lovely floral scent",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 29.99
+                    },
+                    "stock": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "products/abc.jpg",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "category": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Category"
+                            }
+                        ],
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Review": {
+                "title": "Review",
+                "description": "A user-submitted product review — one per user per product",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "rating": {
+                        "description": "Star rating from 1 (lowest) to 5 (highest)",
+                        "type": "integer",
+                        "example": 4,
+                        "maximum": 5,
+                        "minimum": 1
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Great quality, very satisfied!",
+                        "maxLength": 1000
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "user": {
+                        "description": "Only id and name are loaded — email and other fields are excluded",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Phalla Sok"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "UnauthenticatedError": {
+                "title": "UnauthenticatedError",
+                "description": "Returned when the Sanctum Bearer token is missing, invalid, or expired",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthenticated."
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "An authenticated account holder",
                 "properties": {
                     "id": {
                         "type": "integer",
@@ -3427,11 +3711,83 @@
                     },
                     "name": {
                         "type": "string",
-                        "example": "iPhone 15"
+                        "example": "Phalla Sok"
                     },
-                    "price": {
-                        "type": "number",
-                        "example": 999.99
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "phalla@example.com"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "description": "Returned when request validation fails (HTTP 422)",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "errors": {
+                        "description": "Map of field name to array of error message strings",
+                        "type": "object",
+                        "example": {
+                            "email": [
+                                "The email field is required."
+                            ]
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "WishlistItem": {
+                "title": "WishlistItem",
+                "description": "A product saved to a user's wishlist",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "product": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/components/schemas/Product"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -3440,8 +3796,8 @@
         "securitySchemes": {
             "sanctum": {
                 "type": "http",
-                "description": "Enter token in format: Bearer <token>",
-                "bearerFormat": "JWT",
+                "description": "Enter the Sanctum token only — Swagger UI adds the 'Bearer ' prefix automatically. Obtain a token via /api/login or /api/register.",
+                "bearerFormat": "Sanctum Token",
                 "scheme": "bearer"
             }
         }
