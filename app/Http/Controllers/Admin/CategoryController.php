@@ -11,9 +11,18 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::latest()->paginate(10);
+        $categories = Category::when($request->filled('search'), function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        })
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $query->where('is_active', $request->input('status') === 'active');
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends($request->query());
+
         return view('admin.categories.index', compact('categories'));
     }
 

@@ -9,6 +9,37 @@
     </a>
 </div>
 
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.categories.index') }}" class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control"
+                       placeholder="Search by category name..."
+                       value="{{ request('search') }}">
+            </div>
+
+            <div class="col-md-4">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="bi bi-search"></i> Filter
+                </button>
+                @if(request()->hasAny(['search', 'status']))
+                    <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-secondary" title="Clear filters">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
@@ -28,7 +59,6 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
 
-                    {{-- ✅ Image column (was completely missing before) --}}
                     <td>
                         @if($category->image)
                             <img src="{{ asset('storage/' . $category->image) }}"
@@ -40,7 +70,6 @@
                         @endif
                     </td>
 
-                    {{-- ✅ Name (was shifted into the image column before) --}}
                     <td>{{ $category->name }}</td>
                     <td><code>{{ $category->slug }}</code></td>
                     <td>{{ $category->products()->count() }}</td>
@@ -68,7 +97,13 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">No categories found.</td>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        @if(request()->hasAny(['search', 'status']))
+                            No categories match your filters. <a href="{{ route('admin.categories.index') }}">Clear filters</a>.
+                        @else
+                            No categories found.
+                        @endif
+                    </td>
                 </tr>
                 @endforelse
             </tbody>

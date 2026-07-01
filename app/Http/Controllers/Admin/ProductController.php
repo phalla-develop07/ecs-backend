@@ -12,10 +12,25 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $products = Product::with('category')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->input('search') . '%');
+            })
+            ->when($request->filled('category_id'), function ($query) use ($request) {
+                $query->where('category_id', $request->input('category_id'));
+            })
+            ->when($request->filled('status'), function ($query) use ($request) {
+                $query->where('is_active', $request->input('status') === 'active');
+            })
+            ->latest()
+            ->paginate(10)
+            ->appends($request->query()); // keeps search/filter values when navigating pages
+
+        $categories = Category::where('is_active', true)->get();
+
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()

@@ -54,9 +54,15 @@ class ProductController extends Controller
             ),
         ]
     )]
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(12);
+        $query = Product::with('category')->latest();
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
+
+        $products = $query->paginate(12)->appends($request->query());
 
         return response()->json([
             'success' => true,

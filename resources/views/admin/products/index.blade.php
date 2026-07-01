@@ -9,6 +9,49 @@
     </a>
 </div>
 
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.products.index') }}" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control"
+                       placeholder="Search by product name..."
+                       value="{{ request('search') }}">
+            </div>
+
+            <div class="col-md-3">
+                <select name="category_id" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}"
+                            {{ (string) request('category_id') === (string) $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="bi bi-search"></i> Filter
+                </button>
+                @if(request()->hasAny(['search', 'category_id', 'status']))
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary" title="Clear filters">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
@@ -72,7 +115,13 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted py-4">No products found.</td>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        @if(request()->hasAny(['search', 'category_id', 'status']))
+                            No products match your filters. <a href="{{ route('admin.products.index') }}">Clear filters</a>.
+                        @else
+                            No products found.
+                        @endif
+                    </td>
                 </tr>
                 @endforelse
             </tbody>
